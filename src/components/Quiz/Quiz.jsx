@@ -68,12 +68,19 @@ const Quiz = (props) => {
     return activeQuestion === quiz.length - 1;
   };
 
+  const retryHandler = () => {
+    setActiveQuestion(0)
+    setAnswerState(null)
+    setFinished(false)
+    setResults({})
+  }
+
   return (
     <div className={myCSS.Quiz}>
       <div className={myCSS.QuizWrapper}>
         <h1>Answer all questions</h1>
         {isFinished ? (
-          <FinishedQuiz results={results} quiz={quiz}/>
+          <FinishedQuiz results={results} quiz={quiz} onRetry={retryHandler}/>
         ) : (
           <ActiveQuiz
             question={quiz[activeQuestion].question}

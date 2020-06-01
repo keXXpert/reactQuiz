@@ -1,15 +1,22 @@
 import React from "react";
 import myCSS from "./FinishedQuiz.module.css";
 
-const FinishedQuiz = ({ results, quiz }) => {
+const FinishedQuiz = ({ results, quiz, onRetry }) => {
+  const successCount = Object.keys(results).reduce((total, key) => {
+    if (results[key] === "success") {
+      total++;
+    }
+    return total;
+  }, 0);
+
   return (
     <div className={myCSS.FinishedQuiz}>
       <ul>
         {quiz.map((question, index) => {
           const cls = [
             "fa",
-            results[question.id-1] === "error" ? "fa-times" : "fa-check",
-            myCSS[results[question.id-1]],
+            results[question.id - 1] === "error" ? "fa-times" : "fa-check",
+            myCSS[results[question.id - 1]],
           ];
           return (
             <li key={index}>
@@ -18,14 +25,12 @@ const FinishedQuiz = ({ results, quiz }) => {
             </li>
           );
         })}
-        {/* <li><strong>1. </strong>How are you? <i className={'fa fa-times '+myCSS.error}/></li>
-                <li><strong>2. </strong>How is it going? <i className={'fa fa-check '+myCSS.success}/></li>
-                <li><strong></strong></li>
-                <li><strong></strong></li> */}
       </ul>
-      <p>You answered correctly on N of NN questions!</p>
+      <p>
+        You answered correctly on {successCount} of {quiz.length} questions!
+      </p>
       <div>
-        <button>Retry</button>
+        <button onClick={onRetry}>Retry</button>
       </div>
     </div>
   );
