@@ -8,6 +8,7 @@ import {
   validateForm,
 } from "../../utils/FormFramework/FormFramework";
 import Select from "../../UI/Select/Select";
+import * as axios from "axios";
 
 const createAnswersControl = () => {
   let answers = [];
@@ -46,44 +47,60 @@ const QuizCreator = (props) => {
     evt.preventDefault();
   };
 
+  const resetForm = () => {
+    setControls({
+      question: createControl(
+        {
+          label: "Enter question",
+          errorMessage: "Question could not be empty",
+        },
+        { required: true }
+      ),
+      answers: createAnswersControl(),
+    });
+    setRightAnswerId(1);
+    setFormValid(false);
+  };
+
   const addQuestionHandler = (evt) => {
     evt.preventDefault();
-    let localQuiz = [...quiz]
-    const index = localQuiz.length + 1
-    const quizAnswers = formControls.answers.map((answer, index) => ({ id: index +1,text: answer.value }))
+    let localQuiz = [...quiz];
+    const index = localQuiz.length + 1;
+    const quizAnswers = formControls.answers.map((answer, index) => ({
+      id: index + 1,
+      text: answer.value,
+    }));
     const questionItem = {
-        question: formControls.question.value,
-        id: index,
-        rightAnswerId: rightAnswerId,
-        answers: quizAnswers
-    }
-    localQuiz.push(questionItem)
-    setQuiz(localQuiz)
-    
+      question: formControls.question.value,
+      id: index,
+      rightAnswerId: rightAnswerId,
+      answers: quizAnswers,
+    };
+    localQuiz.push(questionItem);
+    setQuiz(localQuiz);
+
     // reseting from
-    setControls({
-        question: createControl(
-          {
-            label: "Enter question",
-            errorMessage: "Question could not be empty",
-          },
-          { required: true }
-        ),
-        answers: createAnswersControl(),
-      })
-    setRightAnswerId(1)
+    resetForm();
   };
 
-  const addQuizHandler = evt => {
-      evt.preventDefault()
-      console.log(quiz);
-      // TODO - send to server
+  const addQuizHandler = async (evt) => {
+    evt.preventDefault();
+    try {
+      await axios.post(
+        "https://react-quiz-99a01.firebaseio.com/quizes.json",
+        quiz
+      );
+      resetForm();
+      setQuiz([]);
+    } catch (err) {
+      console.log('Error: '+ err);
+    }
   };
 
-  const selectChangeHandler = evt => {
+  const selectChangeHandler = (evt) => {
     setRightAnswerId(+evt.target.value);
   };
-  
+
   const inputChangeHangler = (value, controlName, index) => {
     const localFormControls = { ...formControls };
     const control =

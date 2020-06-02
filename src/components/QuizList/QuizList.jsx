@@ -1,18 +1,35 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import myCSS from "./QuizList.module.css";
-import { NavLink } from 'react-router-dom';
-import * as axios from 'axios'
+import { NavLink } from "react-router-dom";
+import * as axios from "axios";
 
 const QuizList = (props) => {
-  useEffect(()=> {
-    axios.get('https://react-quiz-99a01.firebaseio.com/quiz.json')
-    .then(response => console.log(response))
-  }, [])
+  const [quizes, setQuizes] = useState([])
   
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "https://react-quiz-99a01.firebaseio.com/quizes.json"
+        );
+        const localQuizes = []
+        Object.keys(response.data).forEach((key, index) => {
+          localQuizes.push({id: key, name: 'Quiz #'+ (index + 1)})
+        });
+        setQuizes(localQuizes)
+      } catch (err) {
+        console.log("Err: " + err);
+      }
+    };
+    fetchData();
+  }, []);
+
   const renderQuizes = () => {
-      return [1,2,3].map((quiz, index) => <li key={index} className={myCSS.li}>
-          <NavLink to={'/quiz/'+ quiz}>Quiz #{quiz}</NavLink>
-          </li>)
+    return quizes.map(quiz => (
+      <li key={quiz.id} className={myCSS.li}>
+        <NavLink to={"/quiz/" + quiz.id}>{quiz.name}</NavLink>
+      </li>
+    ));
   };
 
   return (
