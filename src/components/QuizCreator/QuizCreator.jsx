@@ -8,7 +8,7 @@ import {
   validateForm,
 } from "../../utils/FormFramework/FormFramework";
 import Select from "../../UI/Select/Select";
-import * as axios from "axios";
+import axios from "../../api/api";
 
 const createAnswersControl = () => {
   let answers = [];
@@ -86,14 +86,11 @@ const QuizCreator = (props) => {
   const addQuizHandler = async (evt) => {
     evt.preventDefault();
     try {
-      await axios.post(
-        "https://react-quiz-99a01.firebaseio.com/quizes.json",
-        quiz
-      );
+      await axios.post("/quizes.json", quiz);
       resetForm();
       setQuiz([]);
     } catch (err) {
-      console.log('Error: '+ err);
+      console.log("Error: " + err);
     }
   };
 

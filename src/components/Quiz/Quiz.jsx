@@ -1,39 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import myCSS from "./Quiz.module.css";
 import ActiveQuiz from "./ActiveQuiz/ActiveQuiz";
 import FinishedQuiz from "./FinishedQuiz/FinishedQuiz";
-
-const initialQuiz = [
-  {
-    question: "What color is the sky?",
-    id: 1,
-    rightAnswerId: 2,
-    answers: [
-      { id: 1, text: "Green" },
-      { id: 2, text: "Blue" },
-      { id: 3, text: "Red" },
-      { id: 4, text: "Yellow" },
-    ],
-  },
-  {
-    question: "What is the capital of United Kingdom?",
-    id: 2,
-    rightAnswerId: 3,
-    answers: [
-      { id: 1, text: "Paris" },
-      { id: 2, text: "New York" },
-      { id: 3, text: "London" },
-      { id: 4, text: "Rome" },
-    ],
-  },
-];
+import axios from "../../api/api";
+import Loader from "../../UI/Loader/Loader";
 
 const Quiz = (props) => {
-  const [quiz, setQuiz] = useState(initialQuiz);
+  const [quiz, setQuiz] = useState([]);
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [answerState, setAnswerState] = useState(null);
   const [isFinished, setFinished] = useState(false);
   const [results, setResults] = useState({}); // {[id]: 'success' || 'error' }
+  const [isLoading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "/quizes/" + props.match.params.id + ".json"
+        );
+        setQuiz(response.data);
+        console.log(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.log("Err: " + err);
+      }
+    };
+    fetchData();
+  }, [props.match.params.id]);
 
   const onAnswerClick = (answerId) => {
     if (answerState) {
@@ -68,18 +62,20 @@ const Quiz = (props) => {
   };
 
   const retryHandler = () => {
-    setActiveQuestion(0)
-    setAnswerState(null)
-    setFinished(false)
-    setResults({})
-  }
+    setActiveQuestion(0);
+    setAnswerState(null);
+    setFinished(false);
+    setResults({});
+  };
 
   return (
     <div className={myCSS.Quiz}>
       <div className={myCSS.QuizWrapper}>
         <h1>Answer all questions</h1>
-        {isFinished ? (
-          <FinishedQuiz results={results} quiz={quiz} onRetry={retryHandler}/>
+        {isLoading ? (
+          <Loader />
+        ) : isFinished ? (
+          <FinishedQuiz results={results} quiz={quiz} onRetry={retryHandler} />
         ) : (
           <ActiveQuiz
             question={quiz[activeQuestion].question}
