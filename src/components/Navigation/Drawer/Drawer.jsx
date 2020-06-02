@@ -1,21 +1,28 @@
-import React from 'react'
-import myCSS from './Drawer.module.css'
+import React from "react";
+import myCSS from "./Drawer.module.css";
+import Backdrop from "../../../UI/Backdrop/Backdrop";
 
-const links = [ 1, 2, 3 ]
+const links = [1, 2, 3];
 
-const Drawer = ({isOpen}) => {
-    const cls = [myCSS.Drawer]
+const Drawer = ({ isOpen, onMenuClose }) => {
+  const cls = [myCSS.Drawer];
 
-    if (!isOpen) cls.push(myCSS.close)
-    
-    return (
-        <nav className={cls.join(' ')}>
-            <ul>
-                {links.map( (link, index) => <li key={index}><a>Link {link}</a></li>)}
-            </ul>
+  if (!isOpen) cls.push(myCSS.close);
 
-        </nav>
-    )
-}
+  return (
+    <>
+      <nav className={cls.join(" ")}>
+        <ul>
+          {links.map((link, index) => (
+            <li key={index}>
+              <a>Link {link}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      {isOpen && <Backdrop onClick={onMenuClose}/>}
+    </>
+  );
+};
 
-export default Drawer
+export default Drawer;

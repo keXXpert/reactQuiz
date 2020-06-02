@@ -9,9 +9,14 @@ const Layout = (props) => {
     const handleToggle = () => {
         setMenu(!menu)
     }
+
+    const onMenuClose = () => {
+        setMenu(false)
+    }
+
     return (
         <div className={myCSS.Layout}>
-            <Drawer isOpen={menu} />
+            <Drawer isOpen={menu} onMenuClose={onMenuClose}/>
             <MenuToggle isOpen={menu} onToggle={handleToggle}/>
             <main>
                 {props.children}
