@@ -38,6 +38,7 @@ function validateEmail(email) {
 
 const Auth = (props) => {
   const [formControls, setControls] = useState(initialFormControls)
+  const [isFormValid, setFormValid] = useState(false)
   
   const onLogin = (evt) => {
   };
@@ -71,6 +72,13 @@ const Auth = (props) => {
       control.valid = validateControl(control.value, control.validation)
       localFormControls[controlName]=control
       setControls(localFormControls)
+
+      // checking whole form to be valid
+      let localFormValid = true
+      Object.keys(localFormControls).forEach (name => {
+        localFormValid = localFormControls[name].valid && localFormValid
+      })
+      setFormValid(localFormValid)
   }
 
   const renderInputs = () => {
@@ -97,10 +105,10 @@ const Auth = (props) => {
         <h1>Login</h1>
         <form onSubmit={submitHandler} className={myCSS.AuthForm}>
           {renderInputs()}
-          <Button type="success" onClick={onLogin}>
+          <Button type="success" onClick={onLogin} disabled={!isFormValid}>
             Log in
           </Button>
-          <Button type="primary" onClick={onRegister}>
+          <Button type="primary" onClick={onRegister} disabled={!isFormValid}>
             Register
           </Button>
         </form>
