@@ -41,7 +41,6 @@ const Quiz = (props) => {
     }
     let localResult = results;
     if (quiz[activeQuestion].rightAnswerId === answerId) {
-      debugger;
       setAnswerState({ id: answerId, success: true });
       if (localResult[activeQuestion] !== "error") {
         localResult[activeQuestion] = "success";
