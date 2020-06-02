@@ -46,13 +46,45 @@ const QuizCreator = (props) => {
     evt.preventDefault();
   };
 
-  const addQuestionHandler = () => {};
-  const addQuizHandler = () => {};
-  const selectChangeHandler = (evt) => {
+  const addQuestionHandler = (evt) => {
+    evt.preventDefault();
+    let localQuiz = [...quiz]
+    const index = localQuiz.length + 1
+    const quizAnswers = formControls.answers.map((answer, index) => ({ id: index +1,text: answer.value }))
+    const questionItem = {
+        question: formControls.question.value,
+        id: index,
+        rightAnswerId: rightAnswerId,
+        answers: quizAnswers
+    }
+    localQuiz.push(questionItem)
+    setQuiz(localQuiz)
+    
+    // reseting from
+    setControls({
+        question: createControl(
+          {
+            label: "Enter question",
+            errorMessage: "Question could not be empty",
+          },
+          { required: true }
+        ),
+        answers: createAnswersControl(),
+      })
+    setRightAnswerId(1)
+  };
+
+  const addQuizHandler = evt => {
+      evt.preventDefault()
+      console.log(quiz);
+      // TODO - send to server
+  };
+
+  const selectChangeHandler = evt => {
     setRightAnswerId(+evt.target.value);
   };
+  
   const inputChangeHangler = (value, controlName, index) => {
-    debugger;
     const localFormControls = { ...formControls };
     const control =
       controlName === "answer"
@@ -111,10 +143,18 @@ const QuizCreator = (props) => {
               { text: 4, value: 4 },
             ]}
           />
-          <Button type="primary" onClick={addQuestionHandler} disabled={!isFormValid}>
+          <Button
+            type="primary"
+            onClick={addQuestionHandler}
+            disabled={!isFormValid}
+          >
             Add question
           </Button>
-          <Button type="success" onClick={addQuizHandler} disabled={!isFormValid}>
+          <Button
+            type="success"
+            onClick={addQuizHandler}
+            disabled={quiz.length === 0}
+          >
             Create test
           </Button>
         </form>
