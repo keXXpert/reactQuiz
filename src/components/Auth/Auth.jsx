@@ -1,103 +1,134 @@
 import React, { useState } from "react";
 import myCSS from "./Auth.module.css";
 import Button from "../../UI/Button/Button";
-import Input from '../../UI/Input/Input';
+import Input from "../../UI/Input/Input";
+import * as axios from "axios";
 
 const initialFormControls = {
-    email: {
-        value: '',
-        type: 'email',
-        label: 'Email',
-        errorMessage: 'Enter valid e-mail',
-        valid: false,
-        touched: false,
-        validation: {
-            required: true,
-            email: true
-        }
+  email: {
+    value: "",
+    type: "email",
+    label: "Email",
+    errorMessage: "Enter valid e-mail",
+    valid: false,
+    touched: false,
+    validation: {
+      required: true,
+      email: true,
     },
-    password: {
-        value: '',
-        type: 'password',
-        label: 'Password',
-        errorMessage: 'Enter valid password',
-        valid: false,
-        touched: false,
-        validation: {
-            required: true,
-            minLength: 6
-        }
-    }
-}
+  },
+  password: {
+    value: "",
+    type: "password",
+    label: "Password",
+    errorMessage: "Enter valid password",
+    valid: false,
+    touched: false,
+    validation: {
+      required: true,
+      minLength: 6,
+    },
+  },
+};
 
 function validateEmail(email) {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
 }
 
-
 const Auth = (props) => {
-  const [formControls, setControls] = useState(initialFormControls)
-  const [isFormValid, setFormValid] = useState(false)
-  
-  const onLogin = (evt) => {
+  const [formControls, setControls] = useState(initialFormControls);
+  const [isFormValid, setFormValid] = useState(false);
+
+  const onLogin = async () => {
+    const authData = {
+      email: formControls.email.value,
+      password: formControls.password.value,
+      returnSecureToken: true,
+    };
+    try {
+      const response = await axios.post(
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAXjwr7aTPS0gE5wcNF7hV_aauaB10oitw",
+        authData
+      );
+      console.log(response.data);
+    } catch (err) {
+      console.log("Login error: " + err);
+    }
   };
-  const onRegister = (evt) => {
+  const onRegister = async () => {
+    const authData = {
+      email: formControls.email.value,
+      password: formControls.password.value,
+      returnSecureToken: true,
+    };
+    try {
+      const response = await axios.post(
+        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAXjwr7aTPS0gE5wcNF7hV_aauaB10oitw",
+        authData
+      );
+      console.log(response.data);
+    } catch (err) {
+      console.log("Register error: " + err);
+    }
   };
   const submitHandler = (evt) => {
     evt.preventDefault();
   };
 
   const validateControl = (value, validation) => {
-    if (!validation) return true
-    let isValid = true
+    if (!validation) return true;
+    let isValid = true;
     if (validation.required) {
-        isValid = value.trim() !== '' && isValid
+      isValid = value.trim() !== "" && isValid;
     }
     if (validation.email) {
-        isValid = validateEmail(value) && isValid
+      isValid = validateEmail(value) && isValid;
     }
     if (validation.minLength) {
-        isValid = value.length >= validation.minLength && isValid
+      isValid = value.length >= validation.minLength && isValid;
     }
-    return isValid
-  }
+    return isValid;
+  };
 
   const onInputChange = (evt, controlName) => {
-      const localFormControls = {...formControls}
-      const control = {...formControls[controlName]}
+    const localFormControls = { ...formControls };
+    const control = { ...formControls[controlName] };
 
-      control.value = evt.target.value
-      control.touched = true
-      control.valid = validateControl(control.value, control.validation)
-      localFormControls[controlName]=control
-      setControls(localFormControls)
+    control.value = evt.target.value;
+    control.touched = true;
+    control.valid = validateControl(control.value, control.validation);
+    localFormControls[controlName] = control;
+    setControls(localFormControls);
 
-      // checking whole form to be valid
-      let localFormValid = true
-      Object.keys(localFormControls).forEach (name => {
-        localFormValid = localFormControls[name].valid && localFormValid
-      })
-      setFormValid(localFormValid)
-  }
+    // checking whole form to be valid
+    let localFormValid = true;
+    Object.keys(localFormControls).forEach((name) => {
+      localFormValid = localFormControls[name].valid && localFormValid;
+    });
+    setFormValid(localFormValid);
+  };
 
   const renderInputs = () => {
-      return Object.keys (formControls).map( (controlName, index) => {
-        const control = formControls[controlName]
-        return (
-              <Input key={controlName+index}
-                value={control.value}
-                valid={control.valid}
-                type={control.type}
-                touched={control.touched}
-                label={control.label}
-                errorMessage={control.errorMessage}
-                shouldValidate={!!control.validation}
-                onChange={ evt => {onInputChange (evt, controlName)}}
-                 />
-          )
-      })
-  }
+    return Object.keys(formControls).map((controlName, index) => {
+      const control = formControls[controlName];
+      return (
+        <Input
+          key={controlName + index}
+          value={control.value}
+          valid={control.valid}
+          type={control.type}
+          touched={control.touched}
+          label={control.label}
+          errorMessage={control.errorMessage}
+          shouldValidate={!!control.validation}
+          onChange={(evt) => {
+            onInputChange(evt, controlName);
+          }}
+        />
+      );
+    });
+  };
 
   return (
     <div className={myCSS.Auth}>
