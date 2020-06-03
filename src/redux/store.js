@@ -1,6 +1,7 @@
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import quizReducer from './reducers/quizReducer';
+import createReducer from './reducers/createReducer';
 
 const composeEnhancers =
   typeof window === 'object' &&
@@ -10,7 +11,8 @@ const composeEnhancers =
 
     
 let reducers = combineReducers({
-    quiz: quizReducer
+    quiz: quizReducer,
+    create: createReducer
 })
 
 const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)))

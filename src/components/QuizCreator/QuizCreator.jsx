@@ -8,7 +8,8 @@ import {
   validateForm,
 } from "../../utils/FormFramework/FormFramework";
 import Select from "../../UI/Select/Select";
-import axios from "../../api/api";
+import { connect } from "react-redux";
+import { setQuiz, addNewQuiz } from "../../redux/reducers/createReducer";
 
 const createAnswersControl = () => {
   let answers = [];
@@ -37,8 +38,8 @@ const initialFormControls = {
   answers: createAnswersControl(),
 };
 
-const QuizCreator = (props) => {
-  const [quiz, setQuiz] = useState([]);
+const QuizCreator = ({ quiz, setQuiz, addNewQuiz }) => {
+  // const [quiz, setQuiz] = useState([]);
   const [rightAnswerId, setRightAnswerId] = useState(1);
   const [isFormValid, setFormValid] = useState(false);
   const [formControls, setControls] = useState(initialFormControls);
@@ -83,15 +84,10 @@ const QuizCreator = (props) => {
     resetForm();
   };
 
-  const addQuizHandler = async (evt) => {
+  const addQuizHandler = (evt) => {
     evt.preventDefault();
-    try {
-      await axios.post("/quizes.json", quiz);
-      resetForm();
-      setQuiz([]);
-    } catch (err) {
-      console.log("Error: " + err);
-    }
+    addNewQuiz(quiz);
+    resetForm();
   };
 
   const selectChangeHandler = (evt) => {
@@ -177,4 +173,10 @@ const QuizCreator = (props) => {
   );
 };
 
-export default QuizCreator;
+const mapStateToProps = (state) => {
+  return {
+    quiz: state.create.quiz,
+  };
+};
+
+export default connect(mapStateToProps, { setQuiz, addNewQuiz })(QuizCreator);
