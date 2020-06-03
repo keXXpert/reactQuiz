@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import myCSS from "./Quiz.module.css";
 import ActiveQuiz from "./ActiveQuiz/ActiveQuiz";
 import FinishedQuiz from "./FinishedQuiz/FinishedQuiz";
-import axios from "../../api/api";
 import Loader from "../../UI/Loader/Loader";
+import { connect } from "react-redux";
+import {
+  fetchQuizeById,
+  setFinished,
+  setAnswerState,
+  setActiveQuestion,
+  setResults,
+} from "../../redux/reducers/quizReducer";
 
-const Quiz = (props) => {
-  const [quiz, setQuiz] = useState([]);
-  const [activeQuestion, setActiveQuestion] = useState(0);
-  const [answerState, setAnswerState] = useState(null);
-  const [isFinished, setFinished] = useState(false);
-  const [results, setResults] = useState({}); // {[id]: 'success' || 'error' }
-  const [isLoading, setLoading] = useState(true);
-
+const Quiz = ({
+  quiz,
+  activeQuestion,
+  answerState,
+  isFinished,
+  results,
+  isLoading,
+  ...props
+}) => {
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "/quizes/" + props.match.params.id + ".json"
-        );
-        setQuiz(response.data);
-        console.log(response.data);
-        setLoading(false);
-      } catch (err) {
-        console.log("Err: " + err);
-      }
-    };
+    async function fetchData() {
+      props.fetchQuizeById(props.match.params.id);
+    }
     fetchData();
   }, [props.match.params.id]);
 
@@ -35,25 +34,25 @@ const Quiz = (props) => {
     }
     let localResult = results;
     if (quiz[activeQuestion].rightAnswerId === answerId) {
-      setAnswerState({ id: answerId, success: true });
+      props.setAnswerState({ id: answerId, success: true });
       if (localResult[activeQuestion] !== "error") {
         localResult[activeQuestion] = "success";
-        setResults(localResult);
+        props.setResults(localResult);
       }
       const timeout = window.setTimeout(() => {
         if (isQuizFinished()) {
           console.log("Finished", results);
-          setFinished(true);
+          props.setFinished(true);
         } else {
-          setActiveQuestion(activeQuestion + 1);
+          props.setActiveQuestion(activeQuestion + 1);
         }
-        setAnswerState(null);
+        props.setAnswerState(null);
         window.clearTimeout(timeout);
       }, 1000);
     } else {
       localResult[activeQuestion] = "error";
-      setResults(localResult);
-      setAnswerState({ id: answerId, success: false });
+      props.setResults(localResult);
+      props.setAnswerState({ id: answerId, success: false });
     }
   };
 
@@ -62,17 +61,17 @@ const Quiz = (props) => {
   };
 
   const retryHandler = () => {
-    setActiveQuestion(0);
-    setAnswerState(null);
-    setFinished(false);
-    setResults({});
+    props.setActiveQuestion(0);
+    props.setAnswerState(null);
+    props.setFinished(false);
+    props.setResults({});
   };
 
   return (
     <div className={myCSS.Quiz}>
       <div className={myCSS.QuizWrapper}>
         <h1>Answer all questions</h1>
-        {isLoading ? (
+        {isLoading || !quiz ? (
           <Loader />
         ) : isFinished ? (
           <FinishedQuiz results={results} quiz={quiz} onRetry={retryHandler} />
@@ -91,4 +90,21 @@ const Quiz = (props) => {
   );
 };
 
-export default Quiz;
+const mapStateToProps = (state) => {
+  return {
+    quiz: state.quiz.quiz,
+    activeQuestion: state.quiz.activeQuestion,
+    answerState: state.quiz.answerState,
+    isFinished: state.quiz.isFinished,
+    results: state.quiz.results,
+    isLoading: state.quiz.isLoading,
+  };
+};
+
+export default connect(mapStateToProps, {
+  fetchQuizeById,
+  setFinished,
+  setAnswerState,
+  setActiveQuestion,
+  setResults,
+})(Quiz);

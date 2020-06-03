@@ -6,7 +6,10 @@ import { connect } from "react-redux";
 import { fetchQuizes } from '../../redux/reducers/quizReducer';
 
 const QuizList = ({quizes, isLoading, fetchQuizes}) => {
-  useEffect(() => fetchQuizes(), []);
+  useEffect(() => {
+    async function fetchData() {fetchQuizes()}
+    fetchData()
+  }, []);
 
   const renderQuizes = () => {
     return quizes.map((quiz) => (
