@@ -3,16 +3,19 @@ import myCSS from "./Drawer.module.css";
 import Backdrop from "../../../UI/Backdrop/Backdrop";
 import { NavLink } from "react-router-dom";
 
-const links = [
-  { to: "/", label: "List", exact: true },
-  { to: "/auth", label: "Login", exact: false },
-  { to: "/quiz-creator", label: "Create quiz", exact: false },
-];
 
-const Drawer = ({ isOpen, onMenuClose }) => {
+
+const Drawer = ({ isOpen, onMenuClose, isAuthed }) => {
   const cls = [myCSS.Drawer];
-
   if (!isOpen) cls.push(myCSS.close);
+  
+  const links = [{ to: "/", label: "Quizes List", exact: true }]
+  if (isAuthed) {
+    links.push({ to: "/quiz-creator", label: "Create quiz", exact: false })
+    links.push({ to: "/logout", label: "Logout", exact: false })
+  } else {
+    links.push({ to: "/auth", label: "Login", exact: false })
+  }
 
   return (
     <>
