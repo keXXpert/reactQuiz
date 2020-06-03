@@ -136,7 +136,7 @@ const QuizCreator = ({ quiz, setQuiz, addNewQuiz }) => {
     <div className={myCSS.QuizCreator}>
       <div>
         <h1>Create new quiz</h1>
-        <form>
+        <form onSubmit={evt => evt.preventDefault()}>
           {renderInputs()}
 
           <Select

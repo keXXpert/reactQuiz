@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import myCSS from "./Auth.module.css";
 import Button from "../../UI/Button/Button";
 import Input from "../../UI/Input/Input";
-import * as axios from "axios";
+import { connect } from 'react-redux';
+import { auth } from '../../redux/reducers/authReducer';
 
 const initialFormControls = {
   email: {
@@ -36,44 +37,15 @@ function validateEmail(email) {
   return re.test(String(email).toLowerCase());
 }
 
-const Auth = (props) => {
+const Auth = ({auth}) => {
   const [formControls, setControls] = useState(initialFormControls);
   const [isFormValid, setFormValid] = useState(false);
 
-  const onLogin = async () => {
-    const authData = {
-      email: formControls.email.value,
-      password: formControls.password.value,
-      returnSecureToken: true,
-    };
-    try {
-      const response = await axios.post(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAXjwr7aTPS0gE5wcNF7hV_aauaB10oitw",
-        authData
-      );
-      console.log(response.data);
-    } catch (err) {
-      console.log("Login error: " + err);
-    }
+  const onLogin = () => {
+    auth(formControls.email.value, formControls.password.value, true)
   };
-  const onRegister = async () => {
-    const authData = {
-      email: formControls.email.value,
-      password: formControls.password.value,
-      returnSecureToken: true,
-    };
-    try {
-      const response = await axios.post(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAXjwr7aTPS0gE5wcNF7hV_aauaB10oitw",
-        authData
-      );
-      console.log(response.data);
-    } catch (err) {
-      console.log("Register error: " + err);
-    }
-  };
-  const submitHandler = (evt) => {
-    evt.preventDefault();
+  const onRegister = () => {
+    auth(formControls.email.value, formControls.password.value, false)
   };
 
   const validateControl = (value, validation) => {
@@ -134,7 +106,7 @@ const Auth = (props) => {
     <div className={myCSS.Auth}>
       <div>
         <h1>Login</h1>
-        <form onSubmit={submitHandler} className={myCSS.AuthForm}>
+        <form onSubmit={evt => evt.preventDefault()} className={myCSS.AuthForm}>
           {renderInputs()}
           <Button type="success" onClick={onLogin} disabled={!isFormValid}>
             Log in
@@ -148,4 +120,4 @@ const Auth = (props) => {
   );
 };
 
-export default Auth;
+export default connect(null, {auth})(Auth);
