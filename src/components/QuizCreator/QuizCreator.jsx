@@ -44,10 +44,6 @@ const QuizCreator = ({ quiz, setQuiz, addNewQuiz }) => {
   const [isFormValid, setFormValid] = useState(false);
   const [formControls, setControls] = useState(initialFormControls);
 
-  const submitHandler = (evt) => {
-    evt.preventDefault();
-  };
-
   const resetForm = () => {
     setControls({
       question: createControl(
@@ -88,6 +84,7 @@ const QuizCreator = ({ quiz, setQuiz, addNewQuiz }) => {
     evt.preventDefault();
     addNewQuiz(quiz);
     resetForm();
+    setQuiz([])
   };
 
   const selectChangeHandler = (evt) => {
@@ -139,7 +136,7 @@ const QuizCreator = ({ quiz, setQuiz, addNewQuiz }) => {
     <div className={myCSS.QuizCreator}>
       <div>
         <h1>Create new quiz</h1>
-        <form onSubmit={submitHandler}>
+        <form>
           {renderInputs()}
 
           <Select

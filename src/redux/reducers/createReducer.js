@@ -25,15 +25,6 @@ export const addNewQuiz = (quiz) => async (dispatch) => {
   } catch (err) {
     console.log("Error: " + err);
   }
-
-  // try {
-  //   dispatch(setLoading(true));
-  //   const response = await axios.get("/quizes/" + quizId + ".json");
-  //   dispatch(setQuiz(response.data));
-  // } catch (err) {
-  //   dispatch(setFetchError(err));
-  // }
-  // dispatch(setLoading(false));
 };
 
 export default createReducer;
