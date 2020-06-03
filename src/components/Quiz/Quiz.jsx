@@ -28,6 +28,10 @@ const Quiz = ({
     fetchData();
   }, [props.match.params.id]);
 
+  useEffect(() => {
+    retryHandler()
+  }, []);
+
   const onAnswerClick = (answerId) => {
     if (answerState) {
       if (answerState.success) return;
